@@ -37,14 +37,24 @@ private[mock] object MockableMacro {
       case _            => abort("@mockable macro should only be applied to objects.")
     }
 
-    val service: Type = c.typecheck(q"(??? : ${c.prefix.tree})").tpe.typeArgs.head
-    if (service == definitions.NothingTpe)
+    val serviceType: Type = c.typecheck(q"(??? : ${c.prefix.tree})").tpe.typeArgs.head
+
+    val serviceTypeArgument = c.prefix.tree match {
+      // trying to extract type parameter as it was passed (including ` signs)
+      case Apply(Select(New(AppliedTypeTree(_, typeParameterArgument :: _)), _), _) =>
+        typeParameterArgument.toString
+      case _                                                                        =>
+        serviceType.toString
+    }
+
+    if (serviceType == definitions.NothingTpe)
       abort(s"@mockable macro requires type parameter: @mockable[Module.Service]")
 
-    val serviceBaseTypeParameters         = service.baseType(service.typeSymbol).typeConstructor.typeParams.map(_.asType)
-    val serviceTypeParameterSubstitutions = serviceBaseTypeParameters.zip(service.typeArgs).toMap
+    val serviceBaseTypeParameters         =
+      serviceType.baseType(serviceType.typeSymbol).typeConstructor.typeParams.map(_.asType)
+    val serviceTypeParameterSubstitutions = serviceBaseTypeParameters.zip(serviceType.typeArgs).toMap
 
-    val env: Type        = c.typecheck(tq"$service", c.TYPEmode).tpe
+    val env              = TypeName(serviceTypeArgument)
     val any: Type        = definitions.AnyTpe
     val throwable: Type  = c.typecheck(q"(??? : _root_.java.lang.Throwable)").tpe
     val unit: Type       = definitions.UnitTpe
@@ -279,7 +289,7 @@ private[mock] object MockableMacro {
 
     val ownersToSkip = Set(typeOf[Object], typeOf[Any]).map(_.typeSymbol)
 
-    val methods = service.members
+    val methods = serviceType.members
       .filter(member => !ownersToSkip.contains(member.owner.asType) && member.name.toTermName != TermName("$init$"))
       .map(symbol => MethodInfo(symbol.asMethod))
       .toList
@@ -329,8 +339,8 @@ private[mock] object MockableMacro {
           val compose: $composeAsc =
             _root_.zio.ZLayer.fromZIO(
             _root_.zio.ZIO.service[_root_.zio.mock.Proxy].flatMap { proxy =>
-              withRuntime[_root_.zio.mock.Proxy, $service] { rts =>
-                class $serviceClassName extends $service {
+              withRuntime[_root_.zio.mock.Proxy, $env] { rts =>
+                class $serviceClassName extends $env {
                   ..$mocks
                 }
                 _root_.zio.ZIO.succeed { new $serviceClassName }

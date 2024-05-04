@@ -20,6 +20,15 @@ object modules {
     }
   }
 
+  type BacktickObjectSinglePureValModule = `type`.BacktickObjectSinglePureValModule.Service
+  object `type` {
+    object BacktickObjectSinglePureValModule {
+      trait Service {
+        val foo: UIO[Unit]
+      }
+    }
+  }
+
   type SimplePureDefsModule = SimplePureDefsModule.Service
   object SimplePureDefsModule {
     trait Service {
