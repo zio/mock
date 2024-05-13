@@ -86,6 +86,8 @@ In this example, the `register` method has a service call to its collaborators, 
 
 Mockists would probably claim that testing how collaborators are called during the test process allows us to test the UserService. Let's move on to the next section and see the mockists' solution in greater detail.
 
+[link-sls-6.26.1]: https://www.scala-lang.org/files/archive/spec/2.11/06-expressions.html#value-conversions
+
 ## The Solution
 
 In this sort of situations we need mock implementations of our _collaborator service_. As _Martin Fowler_ puts it in his excellent article [Mocks Aren't Stubs][link-test-doubles]:
@@ -100,6 +102,8 @@ In this example, we can define these three test cases:
 3. Otherwise, we expect that the `save` method of `UserRepository` will be called with the corresponding `User` object, and the `send` method of `EmailService` will be called with this content: "Congratulation, you are registered!".
 
 ZIO Test provides a framework for mocking our modules. In the next section, we are going to test `UserService` by mocking its collaborators.
+
+[link-test-doubles]: https://martinfowler.com/articles/mocksArentStubs.html
 
 ## Mocking Collaborators
 
