@@ -68,10 +68,10 @@ object MockReporter {
       }
 
       private def makeTestFailure(messages: Seq[String]) = {
-        val ass = Assertion.assertion[Any](
+        val assertion = Assertion.assertion[Any](
           messages.mkString(" " + prefix(ExpectationState.Unsatisfied))
         )(_ => false)
-        TestFailure.Assertion(assert("Your test case")(ass))
+        TestFailure.Assertion(assert("Your test case")(assertion))
       }
 
       private def prefix(state: ExpectationState) =
