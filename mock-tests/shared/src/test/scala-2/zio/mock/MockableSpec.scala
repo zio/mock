@@ -313,6 +313,24 @@ object MockableSpec extends ZIOSpecDefault {
 
           Check
         })(anything)
+      },
+      test("generates mocks for services that has backtick symbol") {
+        assert({
+          @mockable[`type`.BacktickObjectSinglePureValModule.Service]
+          object ModuleMock {
+            val someFooHelper: Expectation[`type`.BacktickObjectSinglePureValModule.Service] = Foo().atLeast(1)
+          }
+
+          object Check {
+            val mock: Mock[BacktickObjectSinglePureValModule] = ModuleMock
+
+            val Foo: ModuleMock.Effect[Unit, Nothing, Unit] = ModuleMock.Foo
+
+            val someFoo: Expectation[`type`.BacktickObjectSinglePureValModule.Service] = ModuleMock.someFooHelper
+          }
+
+          Check
+        })(anything)
       }
     )
   )
