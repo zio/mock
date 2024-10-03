@@ -24,8 +24,8 @@ object BuildHelper {
   val Scala213: String                      = versions("2.13")
   val Scala3: String                        = versions("3.3")
 
-  val SilencerVersion    = "1.7.12"
-  val SjsJavaTimeVersion = "2.3.0"
+  val SilencerVersion      = "1.7.17"
+  val ScalaJavaTimeVersion = "2.6.0"
 
   private val stdOptions = Seq(
     "-deprecation",
@@ -66,7 +66,6 @@ object BuildHelper {
     )
 
   val dottySettings = Seq(
-    crossScalaVersions += Scala3,
     scalacOptions ++= {
       if (scalaVersion.value == Scala3)
         Seq("-noindent", "-Xcheck-macros")
@@ -266,8 +265,8 @@ object BuildHelper {
   )
 
   def jsSettings = Seq(
-    libraryDependencies += "io.github.cquiroz" %%% "scala-java-time"      % SjsJavaTimeVersion,
-    libraryDependencies += "io.github.cquiroz" %%% "scala-java-time-tzdb" % SjsJavaTimeVersion,
+    libraryDependencies += "io.github.cquiroz" %%% "scala-java-time"      % ScalaJavaTimeVersion,
+    libraryDependencies += "io.github.cquiroz" %%% "scala-java-time-tzdb" % ScalaJavaTimeVersion,
     libraryDependencies += ("org.scala-js" %%% "scalajs-java-securerandom" % "1.0.0").cross(CrossVersion.for3Use2_13),
     scalacOptions ++= {
       if (scalaVersion.value == Scala3) Seq("-scalajs")
@@ -276,10 +275,8 @@ object BuildHelper {
   )
 
   def nativeSettings = Seq(
-    Test / test             := (Test / compile).value,
-    doc / skip              := true,
-    Compile / doc / sources := Seq.empty,
-    crossScalaVersions -= Scala3
+    libraryDependencies += "io.github.cquiroz" %%% "scala-java-time"      % ScalaJavaTimeVersion,
+    libraryDependencies += "io.github.cquiroz" %%% "scala-java-time-tzdb" % ScalaJavaTimeVersion
   )
 
   val scalaReflectTestSettings: List[Setting[_]] = List(
