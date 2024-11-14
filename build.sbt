@@ -40,7 +40,7 @@ addCommandAlias(
   ";mockNative/compile"
 )
 
-val zioVersion = "2.0.19"
+val zioVersion = "2.1.12"
 
 lazy val root = (project in file("."))
   .aggregate(
@@ -94,7 +94,7 @@ lazy val mockJS = mock.js
 
 lazy val mockNative = mock.native
   .settings(nativeSettings)
-  .settings(libraryDependencies += "org.ekrich" %%% "sjavatime" % "1.1.9")
+  .settings(libraryDependencies += "org.ekrich" %%% "sjavatime" % "1.3.0")
 
 lazy val mockTests = crossProject(JSPlatform, JVMPlatform)
   .in(file("mock-tests"))
